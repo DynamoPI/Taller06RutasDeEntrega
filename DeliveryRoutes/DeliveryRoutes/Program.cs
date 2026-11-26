@@ -14,6 +14,12 @@ try
     Console.WriteLine($"Streets: {city.TotalStreets} ({city.OneWayStreets} one-way)");
     Console.WriteLine($"Packages: {packages.Count}");
     Console.WriteLine($"Reachability from '{start}': OK");
+
+    var fromAQ = ShortestPaths.Dijkstra(city.Graph, "AQ", StringComparer.Ordinal);
+    var fromBS = ShortestPaths.Dijkstra(city.Graph, "BS", StringComparer.Ordinal);
+
+    Console.WriteLine($"AQ -> BS: {fromAQ.DistanceTo("BS")} m | Path: {string.Join(" -> ", fromAQ.PathTo("BS"))}");
+    Console.WriteLine($"BS -> AQ: {fromBS.DistanceTo("AQ")} m | Path: {string.Join(" -> ", fromBS.PathTo("AQ"))}");
 }
 catch (Exception ex)
 {
