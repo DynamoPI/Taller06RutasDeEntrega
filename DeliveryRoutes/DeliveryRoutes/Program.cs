@@ -1,8 +1,26 @@
 ﻿using Backend;
 
-string cityPath = args.Length > 0 ? args[0] : "city.txt";
-string packagesPath = args.Length > 1 ? args[1] : "packages.txt";
-string start = args.Length > 2 ? args[2] : "D";
+string cityPath;
+string packagesPath;
+string start;
+
+if (args.Length >= 3)
+{
+    cityPath = args[0];
+    packagesPath = args[1];
+    start = args[2];
+}
+else
+{
+    Console.Write("Ruta del archivo de ciudad (ej. city.txt): ");
+    cityPath = (Console.ReadLine() ?? string.Empty).Trim();
+
+    Console.Write("Ruta del archivo de paquetes (ej. packages.txt): ");
+    packagesPath = (Console.ReadLine() ?? string.Empty).Trim();
+
+    Console.Write("Posición inicial (ej. D): ");
+    start = (Console.ReadLine() ?? string.Empty).Trim();
+}
 
 try
 {
@@ -10,18 +28,20 @@ try
     List<Package> packages = PackageFile.Load(packagesPath, city.Graph);
     PackageFile.ValidateReachability(city.Graph, packages, start);
 
-    Console.WriteLine($"Locations: {city.Graph.VertexCount}");
-    Console.WriteLine($"Streets: {city.TotalStreets} ({city.OneWayStreets} one-way)");
-    Console.WriteLine($"Packages: {packages.Count}");
-    Console.WriteLine($"Reachability from '{start}': OK");
+    var planner = new RoutePlanner(city.Graph, packages, start);
+    List<Stop> route = planner.Plan();
 
-    var fromAQ = ShortestPaths.Dijkstra(city.Graph, "AQ", StringComparer.Ordinal);
-    var fromBS = ShortestPaths.Dijkstra(city.Graph, "BS", StringComparer.Ordinal);
+    if (!planner.IsValid(route))
+    {
+        throw new InvalidOperationException("The generated route failed validation.");
+    }
 
-    Console.WriteLine($"AQ -> BS: {fromAQ.DistanceTo("BS")} m | Path: {string.Join(" -> ", fromAQ.PathTo("BS"))}");
-    Console.WriteLine($"BS -> AQ: {fromBS.DistanceTo("AQ")} m | Path: {string.Join(" -> ", fromBS.PathTo("AQ"))}");
+    string report = RoutePrinter.Format(city, packages, start, route, planner);
+    Console.WriteLine();
+    Console.Write(report);
 }
 catch (Exception ex)
 {
-    Console.WriteLine($"Error: {ex.Message}");
+    Console.Error.WriteLine($"Error: {ex.Message}");
+    Environment.ExitCode = 1;
 }
