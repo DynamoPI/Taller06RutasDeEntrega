@@ -1,4 +1,4 @@
-# DeliveryRoutes — Taller 5: Archivos Planos y Grafos
+# DeliveryRoutes — Taller 6: Archivos Planos y Grafos
 
 Aplicación de consola en C# (.NET) que modela el mapa de una ciudad como un **grafo dirigido y ponderado** (lista de adyacencia), valida la alcanzabilidad de las entregas con **BFS**, calcula distancias y caminos mínimos con **Dijkstra** y diseña una ruta corta y válida para recoger y entregar 30 paquetes respetando calles de un solo sentido y el orden de recogida antes de entrega.
 
